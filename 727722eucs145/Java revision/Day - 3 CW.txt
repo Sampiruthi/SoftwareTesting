@@ -1,0 +1,250 @@
+DAY 3 JAVA REVISION
+
+Q1.
+// You are using Java
+import java.io.*;
+import java.util.*;
+class Cart
+{
+    List<Item>al;
+    public Cart()
+    {
+        al=new ArrayList<>();
+    }
+    public void addItem(Item item)
+    {
+        al.add(item);
+    }
+    public void removeItem(Item item)
+    {
+        al.remove(item);
+    }
+    public List<Item> getItem()
+    {
+        return al;
+    }
+    public double calculateTotalPrice()
+    {
+        double p=0.0;
+        for(Item it:al)
+        {
+            p+=it.getPrice();
+        }
+        return p;
+    }
+}
+class Item
+{
+    public String name;
+    public double price;
+    public Item(String a,double b)
+    {
+        name=a;
+        price=b;
+    }
+    public String getName()
+    {
+        return name;
+    }
+    public double getPrice()
+    {
+        return price;
+    }
+}
+class Main
+{
+    public static void main(String[]args)
+    {
+        Scanner o=new Scanner(System.in);
+        int n=o.nextInt();
+        o.nextLine();
+        Cart c=new Cart();
+        for(int i=0;i<n;i++)
+        {
+            String a=o.nextLine();
+            double b=o.nextDouble();
+            o.nextLine();
+            Item item=new Item(a,b);
+            c.addItem(item);
+        }
+        int p=o.nextInt();
+        o.nextLine();
+        for(int i=0;i<p;i++)
+        {
+            String x=o.nextLine();
+            for(Item it:c.getItem())
+            {
+                if(it.getName().equals(x))
+                {
+                    c.removeItem(it);
+                    break;
+                }
+            }
+        }
+        double price=c.calculateTotalPrice();
+        System.out.println("Total Price after removing items: $"+price);
+    }
+}
+
+Q2.
+// You are using Java
+import java.io.*;
+import java.util.*;
+class InsufficientBalanceException extends Exception
+{
+    InsufficientBalanceException(String message)
+    {
+        super(message);
+    }
+}
+class Main
+{
+    public static void main(String[]args)
+    {
+        Scanner o=new Scanner(System.in);
+        try
+        {
+            double bal=o.nextDouble();
+            double trans=o.nextDouble();
+            if(bal>=trans)
+            {
+                System.out.println("Transaction successful.");
+            }
+            else
+            {
+                throw new InsufficientBalanceException("Insufficient balance: Insufficient balance to perform the withdrawal.");
+            }
+        }
+        catch(InsufficientBalanceException f)
+        {
+            System.out.println(f.getMessage());
+        }
+    }
+}
+
+Q3.
+// You are using Java
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+class Main
+{
+    public static void main(String[]args)throws Exception
+    {
+        Scanner o=new Scanner(System.in);
+        
+        String db_url="jdbc:mysql://localhost/ri_db";
+        String user="test";
+        String pwd="test123";
+        
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection conn=DriverManager.getConnection(db_url,user,pwd);
+    
+        int n=o.nextInt();
+        if(n==1)
+        {
+            int id=o.nextInt();
+            o.nextLine();
+            String name=o.nextLine();
+            String contact=o.nextLine();
+            String plan=o.nextLine();
+            String payment=o.nextLine();
+            
+            String query="insert into customer values (?,?,?,?,?)";
+            PreparedStatement st=conn.prepareStatement(query);
+            st.setInt(1,id);
+            st.setString(2,name);
+            st.setString(3,contact);
+            st.setString(4,plan);
+            st.setString(5,payment);
+            st.executeUpdate();
+            
+            System.out.println("Customer record inserted successfully.");
+            String query1="select * from customer";
+            ResultSet rs=st.executeQuery(query1);
+            while(rs.next())
+            {
+                System.out.println("ID: "+rs.getInt(1)+", Name: "+rs.getString(2)+
+                ", Contact Information: "+rs.getString(3)+", Subscription Plan: "+
+                rs.getString(4)+", Payment History: "+rs.getString(5));
+            }
+        }
+        else if(n==2)
+        {
+            int id=o.nextInt();
+            o.nextLine();
+            String name=o.nextLine();
+            String contact=o.nextLine();
+            String plan=o.nextLine();
+            String payment=o.nextLine();
+            
+            String query="update customer set name=?,contact_information=?,subscription_plan=?,payment_history=? where customer_id=?";
+            PreparedStatement st=conn.prepareStatement(query);
+            st.setInt(5,id);
+            st.setString(1,name);
+            st.setString(2,contact);
+            st.setString(3,plan);
+            st.setString(4,payment);
+            st.executeUpdate();
+            
+            System.out.println("Customer record updated successfully.");
+            String query1="select * from customer";
+            ResultSet rs=st.executeQuery(query1);
+            while(rs.next())
+            {
+                System.out.println("ID: "+rs.getInt(1)+", Name: "+rs.getString(2)+
+                ", Contact Information: "+rs.getString(3)+", Subscription Plan: "+
+                rs.getString(4)+", Payment History: "+rs.getString(5));
+            }
+        }
+        else if(n==3)
+        {
+            Statement st=conn.createStatement();
+            String query="select * from customer";
+            ResultSet rs=st.executeQuery(query);
+            while(rs.next())
+            {
+                System.out.println("ID: "+rs.getInt(1)+", Name: "+rs.getString(2)+
+                ", Contact Information: "+rs.getString(3)+", Subscription Plan: "+
+                rs.getString(4)+", Payment History: "+rs.getString(5));
+            }
+        }
+        else
+        {
+            System.out.println("Invalid operation number. Please try again.");
+        }
+    }
+}
+
+Q4.
+// You are using Java
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+class Main
+{
+    public static void main(String[]args)throws Exception
+    {
+        String db_url="jdbc:mysql://localhost/ri_db";
+        String user="test";
+        String pwd="test123";
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn=DriverManager.getConnection(db_url,user,pwd);
+            
+            Statement st=conn.createStatement();
+            String query="select lower(Department_Name) from department";
+            
+            ResultSet rs=st.executeQuery(query);
+            while(rs.next())
+            {
+                System.out.println(rs.getString(1));
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
+    }
+}
